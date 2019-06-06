@@ -18,9 +18,11 @@ pip install watchdog
 ```
 
 ## Getting started:
-
+This repository has 2 folders a usercode folder and a servercode folder.
+The usercode folder can be run without being connected to the SDR.
+The servercode folder is intended to be run on the server that is connected to the SDR.
+To get start
 ```
 git clone --recursive git://github.com/QuantumQuadrate/AOD_Lattice.git
 cd AOD_lattice
-./ServerCode/Tools/setup.sh
 ```
