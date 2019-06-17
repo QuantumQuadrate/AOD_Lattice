@@ -1,12 +1,8 @@
-from PIL import Image
-import requests
-from io import BytesIO
 import matplotlib.pyplot as plt
 import numpy as np
 import json
-from scipy.signal import find_peaks, peak_prominences
-
-
+from scipy.signal import find_peaks
+from Tools.BlackFly import BlackFly
 
 
 def rgb2gray(rgb):
@@ -42,14 +38,11 @@ def updateAmplitudes(pids, amplitudes):
 left = 90
 top = 100
 right = 338
-
 bottom = 110
+cam = BlackFly()
+
 while True:
-    cameraImageURL = "http://10.141.230.220/html/cam_pic.php"
-    response = requests.get(cameraImageURL)
-    img = Image.open(BytesIO(response.content))
-    img = img.crop((left, top, right, bottom)) #(left, up, right, bottom)
-    grayimg = rgb2gray(np.array(img))
+    grayimg = cam.getImage()
     x = range(right-left)
     plt.clf()
     summedFunction = np.sum(grayimg, axis=0)

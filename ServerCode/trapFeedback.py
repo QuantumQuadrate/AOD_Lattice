@@ -8,6 +8,7 @@ import time
 from scipy.signal import find_peaks
 import argparse
 import math
+from Tools.BlackFly import BlackFly
 
 
 def rgb2gray(rgb):
@@ -51,7 +52,6 @@ def parse_args():
     parser.add_argument("-I", "--I", default=0.00002, type=float)
     parser.add_argument("-D", "--D", default=0.000001, type=float)
     parser.add_argument("-f", "--waveformFile", default='Resources/waveformArguments.json', type=str)
-    parser.add_argument("-c", "--cameraImageURL", default="http://10.141.230.220/html/cam_pic.php", type=str)
     parser.add_argument("-p", "--peakProminence", default=400, type=int)
     return parser.parse_args()
 
@@ -67,10 +67,9 @@ for i in range(trapNum):
     print data["Waves"][0][i]["amplitude"]
     pids[i].auto_mode = False
     pids[i].set_auto_mode(True, last_output=data["Waves"][0][i]["amplitude"])
+cam = BlackFly()
 while True:
-    response = requests.get(args.cameraImageURL)
-    img = (Image.open(BytesIO(response.content))).crop(args.window)
-    grayimg = rgb2gray(np.array(img))
+    grayimg = cam.getImage()
     summedFunction = np.sum(grayimg, axis=0)
     peaks, properties = find_peaks(summedFunction, prominence=(args.peakProminence, None))
     amplitudes = summedFunction[peaks]
