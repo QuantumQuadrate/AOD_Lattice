@@ -9,7 +9,7 @@ import numpy as np
 allWaves = []
 
 
-class WaveformManager(object):
+class SoftwareDefinedRadio(object):
 
         def initializeSDR(self, jsonData):
             rate = jsonData['Rate']

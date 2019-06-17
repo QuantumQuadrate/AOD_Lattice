@@ -159,23 +159,26 @@ class BlackflyServer(object):
         except:
             print "send_json failed."
 
-
-
     def get_image(self, msg):
         """Retrieve a single image from a camera by serial number."""
         serial = msg['serial']
-        print self.cameras
-        print "Got this far!"
         err, data = self.cameras[serial].GetImage()
         resp = 'success'
         if err:
             resp = "An error was encountered acquiring image data."
             self.logger.error(resp)
-        self.socket.send_json({
-            'image': data.tolist(),
-            'status': err,
-            'message': resp
-        })
+        if isinstance(data, list):
+            self.socket.send_json({
+                'image': data,
+                'status': err,
+                'message': resp
+            })
+        else:
+            self.socket.send_json({
+                'image': data.tolist(),
+                'status': err,
+                'message': resp
+            })
 
     def loop(self):
         """Run the server loop continuously."""

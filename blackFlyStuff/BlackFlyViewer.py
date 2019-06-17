@@ -4,7 +4,6 @@ import time
 from pyqtgraph.Qt import QtCore, QtGui
 import pyqtgraph as pg
 import numpy as np
-import PyCapture2
 
 app = QtGui.QApplication([])
 win = pg.GraphicsLayoutWidget()
@@ -17,7 +16,7 @@ view.addItem(img)
 context = zmq.Context()
 socket = context.socket(zmq.REQ)
 socket.setsockopt(zmq.RCVTIMEO, 5000)
-addr = "{}://{}:{}".format("tcp", "127.0.0.1", 55555)
+addr = "{}://{}:{}".format("tcp", "10.140.178.187", 55555)
 print addr
 socket.connect(addr)
 
@@ -43,8 +42,10 @@ print "status: " + str(resp["status"])
 print "server message: " + resp["message"]
 
 imageNum = 0
-interval = 5 # ms
+interval = 1
 percentile = 99.5
+
+
 def updateData():
 
     try:
@@ -62,10 +63,10 @@ def updateData():
         img.setImage(image)
 
         latency = int(1000 * (time.time() - starttime))
+        print "latency: " + str(latency)
         QtCore.QTimer.singleShot(interval, updateData)
     except:
         QtCore.QTimer.singleShot(interval, updateData)
-
 
 
 updateData()

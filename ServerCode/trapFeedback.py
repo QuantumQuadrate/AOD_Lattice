@@ -1,6 +1,3 @@
-from PIL import Image
-import requests
-from io import BytesIO
 import numpy as np
 from simple_pid import PID
 import json
