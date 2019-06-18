@@ -2,6 +2,7 @@ import json
 import numpy as np
 import random
 import os
+import math
 
 waveforms = {
     "sine": lambda n, tone_offset, rate: np.exp(n * 2j * np.pi * tone_offset / rate)
@@ -28,9 +29,6 @@ class WaveformManager(object):
         read_file.close()
         return data
 
-    def updateJsonData(self, jsonData):
-        self.jsonData = self.getJsonData()
-
     def saveJsonData(self):
         with open(self.waveformFile, 'w') as outfile:
             json.dump(self.jsonData, outfile, indent=4, separators=(',', ': '))
@@ -45,7 +43,13 @@ class WaveformManager(object):
             self.changePhases(channel, newPhases)
             maxAmp = self.getMaxAmp(channel)
             print maxAmp
-        self.updateJsonData(self.jsonData)
+
+    def getTotalPower(self, channel):
+        # power out of SDR with 4db attenuator and 0 gain with waveforms at 1
+        zeroPower = -20
+        amplifier = 34
+        sumOfWaveforms = 10*math.log10(sum(self.getAmplitudes(channel)))
+        return zeroPower+amplifier+sumOfWaveforms+self.jsonData['Gain']
 
     def getMaxAmp(self, channel):
         wave = self.getWaveform(channel)
@@ -68,6 +72,8 @@ class WaveformManager(object):
         for wave in self.jsonData['Waves'][channel]:
             wave['amplitude'] = amplitudes[i]
             i += 1
+        if self.monitor:
+            self.updateStreamingWaveform()
         return True
 
     def changePhases(self, channel, phases):
@@ -75,6 +81,8 @@ class WaveformManager(object):
         for wave in self.jsonData['Waves'][channel]:
             wave['phase'] = phases[i]
             i += 1
+        if self.monitor:
+            self.updateStreamingWaveform()
         return True
 
     def makeWaveform(self, freqsList, templateFile):
@@ -85,7 +93,7 @@ class WaveformManager(object):
         for channel in range(len(freqsList)):
             for freq in freqsList[channel]:
                 data['Waves'][channel].append({"freq": freq, "amplitude": .5, "phase": 0})
-        self.updateJsonData(data)
+        self.saveJsonData(data)
         self.randomizePhases(0)
         self.randomizePhases(1)
 
@@ -96,3 +104,39 @@ class WaveformManager(object):
         self.makeWaveform(freqsList, templateFile)
         self.changeAmplitude(1, self.getAmplitudes(0))
         self.changePhases(1, self.getPhases(0))
+
+    def startMonitor(self, streamer):
+        self.monitor = True
+        self.streamer = streamer
+        self.updateStreamingWaveform()
+
+    def stopMonitor(self):
+        self.monitor = False
+
+    def updateStreamingWaveform(self):
+        print self.getTotalPower()
+        if self.getTotalPower() < 30:
+            self.streamer.wave = self.getOutputWaveform()
+        else:
+            print "WARNING: TOO MUCH POWER"
+
+    def initializeWaveforms(self):
+        dataSize = int(np.floor(self.jsonData["Rate"] / self.jsonData['waveFreq']))
+        self.allWaves = []
+        for channel in self.jsonData["Channels"]:
+            self.allWaves.append([])
+            for currentWave in self.jsonData['Waves'][channel]:
+                wave = np.array(list(map(lambda n: waveforms['sine'](n, currentWave['freq'], self.jsonData["Rate"]), np.arange(dataSize, dtype=np.complex64))), dtype=np.complex64)
+                (self.allWaves[channel]).append(wave)
+
+    def getWaveform(self, channel):
+        wave = self.allWaves[0][0]*0
+        i = 0
+        for currentWave in self.jsonData['Waves'][channel]:
+                wave = np.add(wave, currentWave['amplitude']*self.allWaves[channel][i]*np.exp(currentWave['phase']*np.pi*2j))
+                i += 1
+        return wave
+
+    def getOutputWaveform(self):
+        outputWave = np.stack((self.getWaveform(0), self.getWaveform(1)), axis=0)
+        return outputWave
