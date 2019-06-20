@@ -83,8 +83,9 @@ def main():
     modTimeOrig = os.stat(waveformFile).st_mtime
     stream = threading.Thread(target=streamWaveform, args=(streamer, wave, metadata))
     stream.start()
+    time.sleep(2)
     while True:
-        time.sleep(.05)
+        time.sleep(.5)
         modTime = os.stat(waveformFile).st_mtime
         if modTime != modTimeOrig:
             print "changed"

@@ -32,9 +32,9 @@ def updateAmplitudes(pids, amplitudes, waveformFile):
         data = json.load(read_file)
     read_file.close()
     for i in range(len(pids)):
-        control = pids[i](10*math.log10(amplitudes[i]))
+        control = pids[i](amplitudes[i])
         for chan in range(len(data["Channels"])):
-            data["Waves"][chan][i]["amplitude"] = 10.0**(control/10.0)
+            data["Waves"][chan][i]["amplitude"] = control
         print str(amplitudes[i]) + " " + str(control)
     with open(waveformFile, 'w') as outfile:
         json.dump(data, outfile, indent=4, separators=(',', ': '))
@@ -45,7 +45,7 @@ def updateAmplitudes(pids, amplitudes, waveformFile):
 def parse_args():
     """Parse the command line arguments"""
     parser = argparse.ArgumentParser()
-    parser.add_argument("-w", "--window", default=(98, 100, 324, 110), type=tuple)
+    parser.add_argument("-w", "--window", default=(90, 100, 338, 110), type=tuple)
     parser.add_argument("-t", "--traps", default=1, type=int)
     parser.add_argument("-P", "--P", default=.00005, type=float)
     parser.add_argument("-I", "--I", default=0.00002, type=float)
@@ -63,7 +63,7 @@ with open(args.waveformFile) as read_file:
     data = json.load(read_file)
 read_file.close()
 for i in range(trapNum):
-    pids += [PID(args.P, args.I, args.D, setpoint=1000, output_limits=(-10, 0))]
+    pids += [PID(args.P, args.I, args.D, setpoint=1000, output_limits=(0, 1))]
     print data["Waves"][0][i]["amplitude"]
     pids[i].auto_mode = False
     pids[i].set_auto_mode(True, last_output=data["Waves"][0][i]["amplitude"])
@@ -74,5 +74,5 @@ while True:
     summedFunction = np.sum(grayimg, axis=0)
     peaks, properties = find_peaks(summedFunction, prominence=(args.peakProminence, None))
     amplitudes = summedFunction[peaks]
-    updateAmplitudes(pids, amplitudes, args.waveformFile)
-    time.sleep(.05)
+    updateAmplitudes(pids, amplitudes[::-1], args.waveformFile)
+    time.sleep(.1)
