@@ -1,8 +1,7 @@
 import uhd
 from uhd import libpyuhd as lib
 import threading
-from Tools.WaveformManager import WaveformManager
-from Tools.SoftwareDefinedRadio import SoftwareDefinedRadio
+from Tools.WaveformMonitor import WaveformMonitor
 import time
 import os
 from watchdog.observers import Observer
@@ -27,9 +26,8 @@ def streamWaveform(streamer, wave, metadata):
         streamer.send(streamingWave, metadata)
 
 
-waveMan = WaveformManager("Resources/waveformArguments.json")
-waveMan.makeLatticeWaveform(5, 7e5, "Resources/waveformTemplate.json")
-
+waveMan = WaveformMonitor("Resources/waveformArguments.json")
+waveMan.initializeWaveforms()
 jsonData = waveMan.getJsonData()
 rate = jsonData['Rate']
 gain = jsonData['Gain']
