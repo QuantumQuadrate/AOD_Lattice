@@ -18,8 +18,9 @@ class EventHandler(FileSystemEventHandler):
         self.waveMonitor = waveMonitor
 
     def on_any_event(self, event):
-        print self.waveMonitor.getTotalPower()
-        if self.waveMonitor.getTotalPower() < 30:
+        print self.waveMonitor.getTotalPower(0)
+        print self.waveMonitor.getTotalPower(1)
+        if self.waveMonitor.getTotalPower(1) < 30 and self.waveMonitor.getTotalPower(0) < 30:
             self.streamer.wave = self.waveMonitor.getOutputWaveform()
         else:
             print "WARNING: TOO MUCH POWER"
@@ -52,9 +53,9 @@ class WaveformMonitor(object):
             amplitudes.append(wave['amplitude'])
         return amplitudes
 
-    def startMonitor(self):
+    def startMonitor(self, stream):
         path = os.path.dirname(os.path.abspath(self.waveformFile))
-        event_handler = EventHandler(self)
+        event_handler = EventHandler(stream, self)
         observer = Observer()
         observer.schedule(event_handler, path)
         observer.start()

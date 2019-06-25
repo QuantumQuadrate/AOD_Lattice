@@ -17,13 +17,12 @@ class SoftwareDefinedRadio(object):
 
         def initializeSDR(self):
             jsonData = self.waveMonitor.getJsonData()
+            # type=x300,addr=192.168.30.2,second_addr=192.168.40.2
+            usrp = uhd.usrp.MultiUSRP('')
             rate = jsonData['Rate']
             gain = jsonData['Gain']
             centerFreq = jsonData['CenterFreq']
             channels = jsonData['Channels']
-            # type=x300,addr=192.168.30.2,second_addr=192.168.40.2
-            usrp = uhd.usrp.MultiUSRP('')
-
             for chan in channels:
                 usrp.set_tx_rate(rate, chan)
                 usrp.set_tx_freq(lib.types.tune_request(centerFreq), chan)
@@ -35,7 +34,7 @@ class SoftwareDefinedRadio(object):
             self.metadata = lib.types.tx_metadata()
 
         def startStreamingWaveform(self):
-            if self.waveMonitor.getTotalPower() < 30:
+            if self.waveMonitor.getTotalPower(1) < 30 and self.waveMonitor.getTotalPower(0) < 30:
                 wave = self.waveMonitor.getOutputWaveform()
                 self.stream = threading.Thread(target=streamWaveform, args=[self.streamer, wave, self.metadata])
                 self.stream.start()
