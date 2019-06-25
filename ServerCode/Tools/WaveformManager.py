@@ -2,7 +2,8 @@ import json
 import numpy as np
 import random
 import os
-from WaveformMonitor import WaveformMonitor
+import math
+
 
 waveforms = {
     "sine": lambda n, tone_offset, rate: np.exp(n * 2j * np.pi * tone_offset / rate)
@@ -20,6 +21,13 @@ class WaveformManager(object):
         self.waveformFile = file
         self.jsonData = self.getJsonData()
         self.modTime = os.stat(self.waveformFile).st_mtime
+
+    def getTotalPower(self, channel):
+        # power out of SDR with 4db attenuator and 0 gain with waveforms at 1
+        zeroPower = -20
+        amplifier = 34
+        sumOfWaveforms = 10*math.log10(sum(self.getAmplitudes(channel)))
+        return zeroPower+amplifier+sumOfWaveforms+self.jsonData['Gain']
 
     def initializeWaveforms(self):
         dataSize = int(np.floor(self.jsonData["Rate"] / self.jsonData['waveFreq']))

@@ -12,13 +12,13 @@ class Server(object):
     def runServer(self, waveMon, waveManager):
 
         app = Flask(__name__, static_url_path='/static')
-        @app.route('/getImage', methods=['GET'])
-        def getImage():
+        @app.route('/', methods=['GET'])
+        def index():
             return render_template('JSONeditor.html')
 
-        @app.route('/getWaveformArguments', methods=['GET'])
-        def getWaveformArguments():
-            return jsonify(waveMon.getJsonData())
+        @app.route('/trapPage', methods=['GET'])
+        def trapPage():
+            return render_template('trapPage.html')
 
         @app.route('/plot.png')
         def plot_png():
@@ -35,8 +35,8 @@ class Server(object):
                 axis.plot(wave)
             return fig
 
-        @app.route('/action/<action>', methods=['POST', 'GET'])
-        def action(action):
+        @app.route('/action/<action>/<channel>', methods=['POST', 'GET'])
+        def action(action, channel):
             if request.method == 'POST':
                 content = request.data
                 content = json.loads(content)
@@ -44,13 +44,15 @@ class Server(object):
             if action == "update":
                 waveManager.updateJsonData(content)
                 waveManager.saveJsonData()
-            elif action == 'randomizePhase':
+            elif action == 'randomizePhases':
                 waveManager.updateJsonData(content)
-                waveManager.randomizePhase()
+                waveManager.randomizePhases(int(channel))
                 waveManager.saveJsonData()
             elif action == 'getPower':
-                waveMon.getJsonData()
-                return str(waveMon.getTotalPower(1))
+                waveManager.getJsonData()
+                return str(int(waveManager.getTotalPower(int(channel))*100)/100.0)
+            elif action == 'getWaveformArguments':
+                return jsonify(waveManager.getJsonData())
             else:
                 return 'error'
             return ''

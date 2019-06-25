@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+	<link href="static/jsoneditor/dist/jsoneditor.min.css" rel="stylesheet" type="text/css">
+	<script src="static/jsoneditor/dist/jsoneditor.min.js"></script>
+	<script>
+		function Get(yourUrl) {
+			var Httpreq = new XMLHttpRequest(); // a new request
+			Httpreq.open("GET", yourUrl, false);
+			Httpreq.send(null);
+			return Httpreq.responseText;
+		}
+	</script>
+</head>
+
+<body>
+	<div class="table-title">
+		<h3>Trap Feedback Page</h3>
+	</div>
+	<div id="container" style='height:500px;'>
+		<div class="table-title">
+
+		</div>
+		<div id="buttons">
+			<div class="table-title">
+				<h3>Actions</h3>
+			</div>
+			<table class="table-fill">
+				<tbody class="table-hover">
+					<tr>
+						<td class="text-left button" onclick='update()'>Update</td>
+						<td class="text-left button" onclick="randomizePhases">Randomize Phase</td>
+						<td class="text-left button" onclick='resetAmplitudes()'>Reset All Amplitudes</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+
+</html>
