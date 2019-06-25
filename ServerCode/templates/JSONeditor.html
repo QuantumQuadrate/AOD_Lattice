@@ -1,0 +1,87 @@
+<link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+	<link href="static/jsoneditor/dist/jsoneditor.min.css" rel="stylesheet" type="text/css">
+	<script src="static/jsoneditor/dist/jsoneditor.min.js"></script>
+<script>
+
+function Get(yourUrl){
+    var Httpreq = new XMLHttpRequest(); // a new request
+    Httpreq.open("GET",yourUrl,false);
+    Httpreq.send(null);
+    return Httpreq.responseText;
+}
+
+</script>
+</head>
+<body>
+	<div class="table-title">
+	<h3>Waveform Manager</h3>
+</div>
+<div id="container" style='height:500px;'>
+
+	<div id='power' class="table-title"></div>
+	<div id="jsoneditor" class='content'></div>
+
+<div id="buttons">
+	<div class="table-title">
+	<h3>Actions</h3>
+</div>
+<table class="table-fill">
+	<tbody class="table-hover">
+		<tr>
+			<td class="text-left button" onclick="randomizePhases">Randomize Phase</td>
+			<td class="text-left button" name='resetAmplitudes'>Reset All Amplitudes</td>
+			<td class="text-left button" name='mute'>Mute Channel Alert</td>
+		</tr>
+
+	</tbody>
+</table>
+</div>
+</div>
+
+	<script>
+			document.getElementById("power").innerHTML = "TOTAL POWER Channel1 = " + Get('http://127.0.0.1/action/getPower');
+			// create the editor
+
+			var container = document.getElementById("jsoneditor");
+			var options = {};
+			var editor = new JSONEditor(container, options);
+
+			// set json
+			var json = JSON.parse(Get('http://127.0.0.1/getWaveformArguments'));
+			editor.set(json);
+
+			// get json
+			var json = editor.get();
+
+			function update() {
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', "http://127.0.0.1/action/update");
+				xhr.send(JSON.stringify(editor.get()));
+				xhr.onloadend = function () {
+				};
+		  }
+
+			function randomizePhase() {
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', "http://127.0.0.1/action/randomizePhase");
+				xhr.send(JSON.stringify(editor.get()));
+				xhr.onloadend = function () {
+					var json = JSON.parse(Get('http://127.0.0.1/getWaveformArguments'));
+					editor.set(json);
+				};
+			}
+
+			function resetAmplitudes() {
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', "http://127.0.0.1/action/randomizePhase");
+				xhr.send();
+				xhr.onloadend = function () {};
+			}
+	</script>
+</body>
+</html>
