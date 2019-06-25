@@ -1,66 +1,141 @@
-from PIL import Image
-import requests
-from io import BytesIO
 import matplotlib.pyplot as plt
 import numpy as np
 import json
-from scipy.signal import find_peaks, peak_prominences
+from scipy.signal import find_peaks
+import zmq
+from scipy import ndimage
 
 
+def getImage(cameraSerial, socket):
+    cmd = {
+        'action': 'GET_IMAGE',
+        'serial': cameraSerial
+    }
+    socket.send(json.dumps(cmd))
+    resp = json.loads(socket.recv())
+    print "status: " + str(resp["status"])
+    print "server message: " + resp["message"]
+    return np.array(resp["image"]), resp["status"]
 
 
-def rgb2gray(rgb):
+def addCamera(cameraSerial, socket):
+    cmd = {
+        'action': 'ADD_CAMERA',
+        'serial': cameraSerial
+    }
+    socket.send(json.dumps(cmd))
+    resp = json.loads(socket.recv())
+    print "status: " + str(resp["status"])
+    print "server message: " + resp["message"]
 
-    r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
-    gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
-
-    return gray
-
-
-def func(x, *params):
-    y = np.zeros_like(x)
-    for i in range(1, len(params), 3):
-        ctr = params[i]
-        amp = params[i+1]
-        wid = params[i+2]
-        y = y + amp * np.exp(-((x - ctr)/wid)**2)
-    y += params[0]
-    return y
-
-
-def updateAmplitudes(pids, amplitudes):
-    with open('waveformArguments.json') as read_file:
-        data = json.load(read_file)
-    for i in range(len(pids)):
-        control = pids[i](amplitudes[i])
-        data["Waves"][i]["amplitude"] = control
-        print control
-
-    return "done"
+    cmd = {
+        'action': 'START',
+        'serial': cameraSerial
+    }
+    socket.send(json.dumps(cmd))
+    resp = json.loads(socket.recv())
+    print resp
+    print "status: " + str(resp["status"])
+    print "server message: " + resp["message"]
 
 
-left = 90
-right = 338
-top = 100
-bottom = 110
+context = zmq.Context()
+socket = context.socket(zmq.REQ)
+socket.setsockopt(zmq.RCVTIMEO, 5000)
+addr = "{}://{}:{}".format("tcp", "10.140.178.187", 55555)
+socket.connect(addr)
+cameraSerial = 14353509
+# addCamera(cameraSerial, socket)
+
+rotation = 43
+top = 284
+bottom = 604
+left = 161
+right = 465
+# top = 345
+# bottom = 358
+# left = 350
+# right = 355
+cutSizeX = 30
+cutSizeY = 30
+
+# leftx = int((left+right)/2)
+# rightx = leftx+cutSizeX
+#
+# lefty = int((left+right)/2)
+# righty = leftx+cutSizeX
+grid = plt.GridSpec(2, 2, wspace=0.4, hspace=0.3)
+fig = plt.figure()
+# while True:
+#     grayimg, status = getImage(cameraSerial, socket)
+#     if status == 0:
+#         plt.clf()
+#         grayimg = ndimage.rotate(grayimg, rotation)
+#         grayimg = grayimg[left:right, top:bottom]
+#
+#         # plt.imshow(grayimg)
+#         dim = grayimg.shape
+#         grayimg = np.transpose(grayimg)
+#         summedFunctionx = np.sum(grayimg, axis=0)
+#
+#         peaksx, properties = find_peaks(summedFunctionx, prominence=(200, None))
+#         # peaksy, properties = find_peaks(summedFunctiony, prominence=(200, None))
+#
+#         # print "number of x peaks = " + str(len(peaksx))
+#         # diff = []
+#         # for i in range(len(peaksx)-1):
+#         #     diff += [peaksx[i] - peaksx[i+1]]
+#         #
+#         # print np.std(diff)
+#         # # print "number of y peaks = " + str(len(peaksy))
+#         plt.plot(summedFunctionx)
+#         plt.plot(peaksx, summedFunctionx[peaksx], "x")
+#         # cuty.plot(summedFunctiony)
+#         # cuty.plot(peaksy, summedFunctiony[peaksy], "x")
+#         # cutx.ylim([0, 2000])
+#         # cuty.set_ylim([0, 2000])
+#         plt.pause(.5)
+# plt.show()
 while True:
-    cameraImageURL = "http://10.141.230.220/html/cam_pic.php"
-    response = requests.get(cameraImageURL)
-    img = Image.open(BytesIO(response.content))
-    img = img.crop((left, top, right, bottom)) #(left, up, right, bottom)
-    grayimg = rgb2gray(np.array(img))
-    x = range(right-left)
-    plt.clf()
-    summedFunction = np.sum(grayimg, axis=0)
-    peaks, properties = find_peaks(summedFunction, prominence=(200, None))
-    print len(peaks)
-    plt.plot(x, summedFunction)
-    plt.plot(peaks, summedFunction[peaks], "x")
-    #popt, pcov = curve_fit(func, x, summedFunction, p0=guess, maxfev=100000)
-    #print popt[1::3]
-    #print popt[3::3]
-    #fit = func(x, *popt)
-    #plt.plot(x, fit
-    plt.ylim(0, 2000)
-    plt.pause(.05)
-plt.show()
+    grayimg, status = getImage(cameraSerial, socket)
+    if status == 0:
+        plt.clf()
+        grayimg = ndimage.rotate(grayimg, rotation)
+        grayimg = grayimg[left:right, top:bottom]
+        cutx = fig.add_subplot(grid[0, 0])
+        cuty = fig.add_subplot(grid[1, 0])
+        image = fig.add_subplot(grid[:, 1])
+        image.imshow(grayimg)
+        dim = grayimg.shape
+        x0 = int(dim[0]/2)
+        x1 = int(dim[0]/2)+cutSizeX
+        y0 = int(dim[1]/2)
+        y1 = int(dim[1]/2)+cutSizeY
+        print "left to right cut: (transpose)" + str(x0) + " " + str(x1)
+        print "top to bottom cut: " + str(y0) + " " + str(y1)
+        image.axvline(x0, color='r')
+        image.axvline(x1, color='r')
+        image.axhline(y0, color='r')
+        image.axhline(y1, color='r')
+        summedFunctionx = np.sum(grayimg[:][y0:y1], axis=0)
+        grayimg = np.transpose(grayimg)
+        summedFunctiony = np.sum(grayimg[x0:x1][:], axis=0)
+
+        peaksx, properties = find_peaks(summedFunctionx, prominence=(200, None))
+        peaksy, properties = find_peaks(summedFunctiony, prominence=(200, None))
+
+        # print "number of x peaks = " + str(len(peaksx))
+        diff = []
+        for i in range(len(peaksx)-1):
+            diff += [peaksx[i] - peaksx[i+1]]
+
+        print np.std(diff)
+        # print "number of y peaks = " + str(len(peaksy))
+        cutx.plot(summedFunctionx)
+        cutx.plot(peaksx, summedFunctionx[peaksx], "x")
+        cuty.plot(summedFunctiony)
+        cuty.plot(peaksy, summedFunctiony[peaksy], "x")
+        cutx.set_ylim([0, 2000])
+        cuty.set_ylim([0, 2000])
+        plt.pause(.5)
+# plt.show()
