@@ -15,8 +15,13 @@ class EventHandler(FileSystemEventHandler):
         self.waveMan = waveMan
 
     def on_any_event(self, event):
-        if self.waveMan.isChanged():
-            self.streamingThread.wave = self.waveMan.generateOutputWaveform()
+        if waveMan.compareFreqs(self.waveMan.getJsonData()):
+            self.waveMan.jsonData = self.waveMan.getJsonData()
+            self.waveMan.initializeWaveforms()
+        else:
+            self.waveMan.jsonData = self.waveMan.getJsonData()
+        self.waveMan.initializeSDR()
+        self.streamingThread.wave = self.waveMan.getOutputWaveform()
 
 
 def streamWaveform(streamer, wave, metadata):
@@ -29,23 +34,16 @@ def streamWaveform(streamer, wave, metadata):
 waveMan = WaveformMonitor("Resources/waveformArguments.json")
 waveMan.initializeWaveforms()
 jsonData = waveMan.getJsonData()
-rate = jsonData['Rate']
-gain = jsonData['Gain']
-centerFreq = jsonData['CenterFreq']
-channels = jsonData['Channels']
 usrp = uhd.usrp.MultiUSRP('')
+waveMan.initializeSDR(usrp, jsonData)
 
-for chan in channels:
-    usrp.set_tx_rate(rate, chan)
-    usrp.set_tx_freq(lib.types.tune_request(centerFreq), chan)
-    usrp.set_tx_gain(gain, chan)
 st_args = lib.usrp.stream_args("fc32", "sc16")
-st_args.channels = channels
+st_args.channels = range(len(jsonData['channels']))
 streamer = usrp.get_tx_stream(st_args)
 buffer_samps = streamer.get_max_num_samps()
 metadata = lib.types.tx_metadata()
 
-wave = waveMan.generateOutputWaveform()
+wave = waveMan.getOutputWaveform()
 
 stream = threading.Thread(target=streamWaveform, args=(streamer, wave, metadata))
 stream.start()

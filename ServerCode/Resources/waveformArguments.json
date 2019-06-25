@@ -1,32 +1,40 @@
 {
-    "waveFreq": 10000,
-    "args": "",
-    "Channels": [
-        0,
-        1
-    ],
-    "Rate": 50000000,
-    "CenterFreq": 50500000,
-    "Gain": 14,
-    "Waves": [
-        [
-            {
-                "phase": 0.09010422140146945,
-                "freq": -1000000,
-                "amplitude": 0.2
-            },
-            {
-                "phase": 0.48636945696610734,
-                "freq": 1000000,
-                "amplitude": 0.2
-            }
-        ],
-        [
-            {
-                "phase": 0.6818392929955244,
-                "freq": 0,
-                "amplitude": 0.2
-            }
-        ]
-    ]
+  "channels": {
+    "0": {
+      "centerFreq": 52500000,
+      "gain": 0,
+      "rate": 50000000,
+      "waveFreq": 10000,
+      "args": "",
+      "waves": [{
+          "phase": 0.09010422140146945,
+          "freq": -1000000,
+          "amplitude": 0.2
+        },
+        {
+          "phase": 0.48636945696610734,
+          "freq": 1000000,
+          "amplitude": 0.2
+        }
+      ]
+    },
+    "1": {
+      "centerFreq": 52500000,
+      "gain": 0,
+      "rate": 50000000,
+      "waveFreq": 10000,
+      "args": "",
+      "waves": [{
+          "phase": 0.09010422140146945,
+          "freq": -1000000,
+          "amplitude": 0.2
+        },
+        {
+          "phase": 0.48636945696610734,
+          "freq": 1000000,
+          "amplitude": 0.2
+        }
+      ]
+    }
+  }
 }

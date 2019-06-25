@@ -1,6 +1,6 @@
 {
   "channels": {
-    0:{
+    0: {
       "centerFreq": 52500000,
       "gain": 0,
       "rate": 50000000,
@@ -8,7 +8,7 @@
       "args": "",
       "waves": []
     },
-    1:{
+    1: {
       "centerFreq": 52500000,
       "gain": 0,
       "rate": 50000000,
