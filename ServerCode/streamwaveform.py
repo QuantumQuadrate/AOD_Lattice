@@ -31,11 +31,11 @@ def streamWaveform(streamer, wave, metadata):
         streamer.send(streamingWave, metadata)
 
 
-waveMan = WaveformMonitor("Resources/waveformArguments.json")
+usrp = uhd.usrp.MultiUSRP('')
+waveMan = WaveformMonitor("Resources/waveformArguments.json", usrp)
 waveMan.initializeWaveforms()
 jsonData = waveMan.getJsonData()
-usrp = uhd.usrp.MultiUSRP('')
-waveMan.initializeSDR(usrp, jsonData)
+waveMan.initializeSDR()
 
 st_args = lib.usrp.stream_args("fc32", "sc16")
 st_args.channels = range(len(jsonData['channels']))
