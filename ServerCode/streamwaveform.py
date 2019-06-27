@@ -16,10 +16,22 @@ class EventHandler(FileSystemEventHandler):
 
     def on_any_event(self, event):
         if waveMan.compareFreqs(self.waveMan.getJsonData()):
-            self.waveMan.jsonData = self.waveMan.getJsonData()
+            result = None
+            while result is None:
+                try:
+                    self.waveMan.jsonData = self.waveMan.getJsonData()
+                    result = 1
+                except:
+                    pass
             self.waveMan.initializeWaveforms()
         else:
-            self.waveMan.jsonData = self.waveMan.getJsonData()
+            result = None
+            while result is None:
+                try:
+                    self.waveMan.jsonData = self.waveMan.getJsonData()
+                    result = 1
+                except:
+                    pass
         self.waveMan.initializeSDR()
         self.streamingThread.wave = self.waveMan.getOutputWaveform()
 
