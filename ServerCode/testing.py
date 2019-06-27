@@ -5,14 +5,10 @@ from Tools.BlackflyCamera import BlackflyCamera
 from Tools.TrapFeedback import TrapFeedback
 from Server import Server
 
-camera = BlackflyCamera({})
-camera.initialize()
-camera.start_capture()
-
 cameraSerial = 14353509
 waveManager = WaveformManager("Resources/waveformArguments.json")
 waveMonitor = WaveformMonitor("Resources/waveformArguments.json")
-peakTool = peakAnalysisTools(camera)
-trapFeedback = TrapFeedback(waveManager, peakTool)
+peakTool = []
+trapFeedback = TrapFeedback(waveManager)
 Server = Server()
 Server.runServer(waveMonitor, waveManager, peakTool, trapFeedback)

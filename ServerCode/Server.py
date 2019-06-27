@@ -50,7 +50,7 @@ class Server(object):
 
         @app.route('/peakData')
         def peakData():
-            return str(peakTool.measureIntensities())
+            return json.dumps(peakTool.measureIntensities())
 
         @app.route('/waveforms.png', methods=['GET'])
         def plot_waveforms():
@@ -91,9 +91,9 @@ class Server(object):
                 trapFeedback.initializePIDs(int(channel))
                 trapFeedback.startFeedback(int(channel))
             elif action == 'stopFeedback':
-                trapFeedback.stopFeedback(int(channel))
+                trapFeedback.stopFeedback()
             else:
                 return 'error'
             return ''
 
-        app.run(host='10.140.178.187', debug=False, use_reloader=False, port=80)
+        app.run(host='0.0.0.0', debug=False, use_reloader=False, port=80)

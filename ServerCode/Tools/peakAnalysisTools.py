@@ -13,8 +13,8 @@ class peakAnalysisTools(object):
 
     def measureIntensities(self):
         data = {"xAmplitudes": [], "yAmplitudes": []}
-        data['xAmplitudes'] = self.summedFunctionx[self.peaksx]
-        data['yAmplitudes'] = self.summedFunctiony[self.peaksy]
+        data['xAmplitudes'] = list(self.summedFunctionx[self.peaksx])
+        data['yAmplitudes'] = list(self.summedFunctiony[self.peaksy])
         return data
 
     def getPlot(self, top, bottom, left, right, rotation, cutSizeX, cutSizeY):
