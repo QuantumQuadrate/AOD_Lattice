@@ -4,7 +4,7 @@ import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import time
-# from uhd import libpyuhd as lib
+from uhd import libpyuhd as lib
 import math
 
 waveforms = {
@@ -84,7 +84,7 @@ class WaveformMonitor(object):
     def initializeSDR(self):
         for channel in self.jsonData['channels']:
             self.usrp.set_tx_rate(self.jsonData['channels'][channel]["rate"], int(channel))
-            # usrp.set_tx_freq(lib.types.tune_request(jsonData[channel]["centerFreq"]), int(channel))
+            self.usrp.set_tx_freq(lib.types.tune_request(self.jsonData['channels'][channel]["centerFreq"]), int(channel))
             self.usrp.set_tx_gain(self.jsonData['channels'][channel]["gain"], int(channel))
 
     def initializeWaveforms(self):
