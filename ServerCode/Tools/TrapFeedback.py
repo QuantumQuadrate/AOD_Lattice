@@ -38,7 +38,7 @@ class TrapFeedback(object):
                 self.PIDs[i].set_auto_mode(True, last_output=10*math.log10(currentAmplitudes[i]))
 
         def measureIntensities(self, channel):
-            dataNames = ['xAmplitudes', 'yAmplitudes']
+            dataNames = ['yAmplitudes', 'xAmplitudes']
             url = "http://128.104.162.32/peakData"
             response = urllib.urlopen(url)
             data = ast.literal_eval(response.read())
