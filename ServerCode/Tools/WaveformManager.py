@@ -115,6 +115,7 @@ class WaveformManager(object):
             for freq in freqsList[channel]:
                 data['channels'][str(channel)]['waves'].append({"freq": freq, "amplitude": .2, "phase": 0})
         self.updateJsonData(data)
+        self.initializeWaveforms()
         self.randomizePhases(0)
         self.randomizePhases(1)
         self.saveJsonData()

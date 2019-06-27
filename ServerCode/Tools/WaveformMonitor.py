@@ -69,7 +69,7 @@ class WaveformMonitor(object):
 
     def compareFreqs(self, jsonData):
         for channel in jsonData["channels"]:
-            for wave1, wave2 in (jsonData[channel]['waves'], self.jsonData[channel]['waves']):
+            for wave1, wave2 in (jsonData["channels"][channel]['waves'], self.jsonData["channels"][channel]['waves']):
                 if wave1["freq"] != wave2['freq']:
                     return True
         return False
@@ -80,11 +80,11 @@ class WaveformMonitor(object):
         read_file.close()
         return data
 
-    def initializeSDR(usrp, jsonData):
+    def initializeSDR(self, usrp, jsonData):
         for channel in jsonData['channels']:
-            usrp.set_tx_rate(jsonData[channel]["rate"], int(channel))
+            usrp.set_tx_rate(jsonData['channels'][channel]["rate"], int(channel))
             # usrp.set_tx_freq(lib.types.tune_request(jsonData[channel]["centerFreq"]), int(channel))
-            usrp.set_tx_gain(jsonData[channel]["gain"], int(channel))
+            usrp.set_tx_gain(jsonData['channels'][channel]["gain"], int(channel))
 
     def initializeWaveforms(self):
         self.allWaves = [[], []]
