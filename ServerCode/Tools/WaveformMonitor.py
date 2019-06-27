@@ -29,9 +29,10 @@ class EventHandler(FileSystemEventHandler):
 
 class WaveformMonitor(object):
 
-    def __init__(self, waveformFile):
+    def __init__(self, waveformFile, usrp):
         self.waveformFile = waveformFile
         self.jsonData = self.getJsonData()
+        self.usrp = usrp
         self.initializeWaveforms()
         self.modTime = os.stat(self.waveformFile).st_mtime
 
@@ -80,11 +81,11 @@ class WaveformMonitor(object):
         read_file.close()
         return data
 
-    def initializeSDR(self, usrp, jsonData):
-        for channel in jsonData['channels']:
-            usrp.set_tx_rate(jsonData['channels'][channel]["rate"], int(channel))
+    def initializeSDR(self):
+        for channel in self.jsonData['channels']:
+            self.usrp.set_tx_rate(self.jsonData['channels'][channel]["rate"], int(channel))
             # usrp.set_tx_freq(lib.types.tune_request(jsonData[channel]["centerFreq"]), int(channel))
-            usrp.set_tx_gain(jsonData['channels'][channel]["gain"], int(channel))
+            self.usrp.set_tx_gain(self.jsonData['channels'][channel]["gain"], int(channel))
 
     def initializeWaveforms(self):
         self.allWaves = [[], []]
