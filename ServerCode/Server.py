@@ -7,7 +7,7 @@ import json
 
 class Server(object):
 
-    def runServer(self, waveMon, waveManager, peakTool, trapFeedback):
+    def runServer(self, waveManager, peakTool, trapFeedback):
         app = Flask(__name__, static_url_path='/static')
 
 
@@ -60,7 +60,7 @@ class Server(object):
             return Response(output.getvalue(), mimetype='image/png')
 
         def create_figure():
-            waves = waveMon.getOutputWaveform()
+            waves = waveManager.getOutputWaveform()
             fig = Figure()
             axis = fig.add_subplot(1, 1, 1)
             for wave in waves:
