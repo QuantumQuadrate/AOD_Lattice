@@ -69,7 +69,7 @@ class WaveformMonitor(object):
 
     def compareFreqs(self, jsonData):
         for channel in jsonData["channels"]:
-            for wave1, wave2 in (jsonData["channels"][channel]['waves'], self.jsonData["channels"][channel]['waves']):
+            for wave1, wave2 in zip(jsonData["channels"][channel]['waves'], self.jsonData["channels"][channel]['waves']):
                 if wave1["freq"] != wave2['freq']:
                     return True
         return False
