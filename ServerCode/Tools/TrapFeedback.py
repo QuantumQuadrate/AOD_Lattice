@@ -12,9 +12,9 @@ class TrapFeedback(object):
         def __init__(self, waveManager):
             self.waveManager = waveManager
             self.PIDs = []
-            self.P = .000005
-            self.I = .0000002
-            self.D = .0000001
+            self.P = .5
+            self.I = .02
+            self.D = .01
             self.peakProminence = 200
             self.waitTime = .1
 
