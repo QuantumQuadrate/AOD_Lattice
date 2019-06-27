@@ -1,16 +1,17 @@
 from Tools.WaveformMonitor import WaveformMonitor
+from Tools.WaveformManager import WaveformManager
+from Tools.peakAnalysisTools import peakAnalysisTools
+from Tools.BlackflyCamera import BlackflyCamera
+from Server import Server
 
+camera = BlackflyCamera({})
+camera.initialize()
+camera.start_capture()
 
-waveMan = WaveformMonitor("Resources/waveformArguments.json")
-jsonData = waveMan.getJsonData()
-print len(jsonData['channels'])
-for channel in jsonData['channels']:
-    print jsonData[channel]["rate"]
-    print channel[channel]["centerFreq"]
-    print channel[channel]["gain"]
-#
-# st_args = lib.usrp.stream_args("fc32", "sc16")
-# st_args.channels = channels
-# streamer = usrp.get_tx_stream(st_args)
-# buffer_samps = streamer.get_max_num_samps()
-# metadata = lib.types.tx_metadata()
+cameraSerial = 14353502
+serverIP = "10.140.178.187"
+waveManager = WaveformManager("Resources/waveformArguments.json")
+waveMonitor = WaveformMonitor("Resources/waveformArguments.json")
+peakTool = peakAnalysisTools(camera)
+Server = Server()
+Server.runServer(waveMonitor, waveManager, peakTool)

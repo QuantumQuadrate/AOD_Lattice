@@ -1,6 +1,4 @@
 from flask import Flask, jsonify, Response, render_template, request
-from Tools.WaveformMonitor import WaveformMonitor
-from Tools.WaveformManager import WaveformManager
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import io
@@ -9,9 +7,10 @@ import json
 
 class Server(object):
 
-    def runServer(self, waveMon, waveManager):
-
+    def runServer(self, waveMon, waveManager, peakTool):
         app = Flask(__name__, static_url_path='/static')
+
+
         @app.route('/', methods=['GET'])
         def index():
             return render_template('JSONeditor.html')
@@ -22,6 +21,39 @@ class Server(object):
 
         @app.route('/plot.png')
         def plot_png():
+            self.running = False
+            top = int(request.args.get('top'))
+            bottom = int(request.args.get('bottom'))
+            left = int(request.args.get('left'))
+            right = int(request.args.get('right'))
+            rotation = int(request.args.get('rotation'))
+            cutSizeY = int(request.args.get('cutSizeY'))
+            cutSizeX = int(request.args.get('cutSizeX'))
+
+            def generate():
+                while self.running:
+                    output = io.BytesIO()
+                    figure = peakTool.getPlot(top, bottom, left, right, rotation, cutSizeX, cutSizeY)
+                    FigureCanvas(figure).print_png(output)
+                    yield (b'--frame\r\n' b'Content-Type: image/png\r\n\r\n' + output.getvalue() + b'\r\n')
+            self.running = True
+            return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+        @app.route('/streamControl')
+        def stopStream():
+            command = request.args.get('command')
+            if command == "STOP":
+                self.running = False
+            if command == "START":
+                self.running = True
+            return "Done"
+
+        @app.route('/peakData')
+        def peakData():
+            return str(peakTool.measureIntensities())
+
+        @app.route('/waveforms.png', methods=['GET'])
+        def plot_waveforms():
             fig = create_figure()
             output = io.BytesIO()
             FigureCanvas(fig).print_png(output)
@@ -43,9 +75,11 @@ class Server(object):
                 print content
             if action == "update":
                 waveManager.updateJsonData(content)
+                waveManager.initializeWaveforms()
                 waveManager.saveJsonData()
             elif action == 'randomizePhases':
                 waveManager.updateJsonData(content)
+                waveManager.initializeWaveforms()
                 waveManager.randomizePhases(int(channel))
                 waveManager.saveJsonData()
             elif action == 'getPower':
@@ -57,10 +91,4 @@ class Server(object):
                 return 'error'
             return ''
 
-        app.run(host='0.0.0.0', debug=True, use_reloader=True, port=80)
-
-
-waveManager = WaveformManager("Resources/waveformArguments.json")
-waveMonitor = WaveformMonitor("Resources/waveformArguments.json")
-Server = Server()
-Server.runServer(waveMonitor, waveManager)
+        app.run(host='10.140.178.187', debug=False, use_reloader=False, port=80)

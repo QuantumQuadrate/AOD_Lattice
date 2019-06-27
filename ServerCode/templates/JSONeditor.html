@@ -24,14 +24,14 @@
 	<div id="container" style='height:500px;'>
 
 		<div id='power' class="table-title"></div>
-		<div id="jsoneditor" class='content'></div>
+		<div id='power' class="content"><textarea id="jsoneditor"></textarea></div>
 
 		<div id="buttons">
 			<div class="table-title">
 				<h3>Actions <select id="channel">
-					<option value="0">Channel 0</option>
-					<option value="1">Channel 1</option>
-				</select></h3>
+						<option value="0">Channel 0</option>
+						<option value="1">Channel 1</option>
+					</select></h3>
 			</div>
 			<table class="table-fill">
 				<tbody class="table-hover">
@@ -53,32 +53,18 @@
 	</div>
 
 	<script>
-		document.getElementById("power").innerHTML = "<h3>Power = " + Get('/action/getPower/0') + "dbm "+ Get('/action/getPower/1') +"dbm</h3>";
-		// create the editor
-
+		document.getElementById("power").innerHTML = "<h3>Power = " + Get('/action/getPower/0') + "dbm " + Get('/action/getPower/1') + "dbm</h3>";
 		var container = document.getElementById("jsoneditor");
-		var options = {};
-		var editor = new JSONEditor(container, options);
 		var channelNum = document.getElementById("channel");
-
-		// set json
-		var json = JSON.parse(Get('/action/getWaveformArguments/0'));
-		editor.set(json);
-		editor.expandAll();
-
-		// get json
-		var json = editor.get();
+		container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
 
 		function buttonPress(clicked) {
-			alert(options.value)
 			var xhr = new XMLHttpRequest();
 			xhr.open('POST', "/action/" + clicked + "/" + channelNum.value);
-			xhr.send(JSON.stringify(editor.get()));
+			xhr.send(container.value);
 			xhr.onloadend = function() {
-				document.getElementById("power").innerHTML = "<h3>Power = " + Get('/action/getPower/0') + "dbm "+ Get('/action/getPower/1') +"dbm</h3>";
-				var json = JSON.parse(Get('/action/getWaveformArguments/0'));
-				editor.set(json);
-				editor.expandAll();
+				document.getElementById("power").innerHTML = "<h3>Power = " + Get('/action/getPower/0') + "dbm " + Get('/action/getPower/1') + "dbm</h3>";
+				container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
 			};
 		}
 	</script>

@@ -8,8 +8,8 @@ from BlackFlyClient import BlackFlyClient
 
 class TrapFeedback(object):
 
-        def __init__(self, waveManager, channel, cameraSerial, serverIP):
-            self.camera = BlackFlyClient(cameraSerial, serverIP)
+        def __init__(self, waveManager, channel, camera):
+            self.camera = camera
             self.waveManager = waveManager
             self.channel = channel
             self.trapNum = len(waveManager.getAmplitudes(self.channel))

@@ -68,8 +68,8 @@ addr = "{}://{}:{}".format("tcp", "10.140.178.187", 55555)
 print addr
 socket.connect(addr)
 
-cameraSerial = 14353509
-# addCameraWithArea(cameraSerial, socket)
+cameraSerial = 14353502
+addCameraWithArea(cameraSerial, socket)
 imageNum = 0
 interval = 100
 percentile = 99.5

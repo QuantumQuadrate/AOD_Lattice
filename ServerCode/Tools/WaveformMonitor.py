@@ -4,7 +4,7 @@ import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import time
-from uhd import libpyuhd as lib
+# from uhd import libpyuhd as lib
 import math
 
 waveforms = {
@@ -46,11 +46,11 @@ class WaveformMonitor(object):
         zeroPower = -20
         amplifier = 34
         sumOfWaveforms = 10*math.log10(sum(self.getAmplitudes(channel)))
-        return zeroPower+amplifier+sumOfWaveforms+self.jsonData[str(channel)]['gain']
+        return zeroPower+amplifier+sumOfWaveforms+self.jsonData['channels'][str(channel)]['gain']
 
     def getAmplitudes(self, channel):
         amplitudes = []
-        for wave in self.jsonData[str(channel)]['waves']:
+        for wave in self.jsonData['channels'][str(channel)]['waves']:
             amplitudes.append(wave['amplitude'])
         return amplitudes
 
@@ -83,22 +83,21 @@ class WaveformMonitor(object):
     def initializeSDR(usrp, jsonData):
         for channel in jsonData['channels']:
             usrp.set_tx_rate(jsonData[channel]["rate"], int(channel))
-            usrp.set_tx_freq(lib.types.tune_request(jsonData[channel]["centerFreq"]), int(channel))
+            # usrp.set_tx_freq(lib.types.tune_request(jsonData[channel]["centerFreq"]), int(channel))
             usrp.set_tx_gain(jsonData[channel]["gain"], int(channel))
 
     def initializeWaveforms(self):
-        self.allWaves = []
+        self.allWaves = [[], []]
         for channel in self.jsonData['channels']:
-            dataSize = int(np.floor(self.jsonData[channel]["rate"] / self.jsonData[channel]['waveFreq']))
-            self.allWaves.append([])
-            for currentWave in self.jsonData[channel]['waves']:
-                wave = np.array(list(map(lambda n: waveforms['sine'](n, currentWave['freq'], self.jsonData["Rate"]), np.arange(dataSize, dtype=np.complex64))), dtype=np.complex64)
-                (self.allWaves[channel]).append(wave)
+            dataSize = int(np.floor(self.jsonData['channels'][channel]["rate"] / self.jsonData['channels'][channel]['waveFreq']))
+            for currentWave in self.jsonData['channels'][channel]['waves']:
+                wave = np.array(list(map(lambda n: waveforms['sine'](n, currentWave['freq'], self.jsonData['channels'][channel]["rate"]), np.arange(dataSize, dtype=np.complex64))), dtype=np.complex64)
+                (self.allWaves[int(channel)]).append(wave)
 
     def getWaveform(self, channel):
         wave = self.allWaves[0][0]*0
         i = 0
-        for currentWave in self.jsonData[str(channel)]['waves']:
+        for currentWave in self.jsonData['channels'][str(channel)]['waves']:
                 wave = np.add(wave, currentWave['amplitude']*self.allWaves[channel][i]*np.exp(currentWave['phase']*np.pi*2j))
                 i += 1
         return wave

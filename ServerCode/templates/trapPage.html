@@ -4,17 +4,6 @@
 
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-
-	<link href="static/jsoneditor/dist/jsoneditor.min.css" rel="stylesheet" type="text/css">
-	<script src="static/jsoneditor/dist/jsoneditor.min.js"></script>
-	<script>
-		function Get(yourUrl) {
-			var Httpreq = new XMLHttpRequest(); // a new request
-			Httpreq.open("GET", yourUrl, false);
-			Httpreq.send(null);
-			return Httpreq.responseText;
-		}
-	</script>
 </head>
 
 <body>
@@ -22,8 +11,15 @@
 		<h3>Trap Feedback Page</h3>
 	</div>
 	<div id="container" style='height:500px;'>
-		<div class="table-title">
-
+		<div id='power' class="content">
+			top <input type="text" name="top" value=284>
+			bottom <input type="text" name="bottom" value=604><br>
+			left <input type="text" name="left" value=161>
+			right <input type="text" name="right" value=465><br>
+			cut size x <input type="text" name="cutSizeX" value=30>
+			cut size y <input type="text" name="cutSizeY" value=30><br>
+			rotation <input type="text" name="rotation" value=43>
+			<img id="plot" src="/plot.png?top=284&bottom=604&left=161&right=465&cutSizeX=30&cutSizeY=30&rotation=43">
 		</div>
 		<div id="buttons">
 			<div class="table-title">
@@ -32,14 +28,35 @@
 			<table class="table-fill">
 				<tbody class="table-hover">
 					<tr>
-						<td class="text-left button" onclick='update()'>Update</td>
-						<td class="text-left button" onclick="randomizePhases">Randomize Phase</td>
-						<td class="text-left button" onclick='resetAmplitudes()'>Reset All Amplitudes</td>
+						<td class="text-left button" onclick='Get("/streamControl?command=STOP")'>Pause</td>
+						<td class="text-left button" onclick="update()">Play</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 	</div>
 </body>
+<script>
+	function Get(yourUrl) {
+		var Httpreq = new XMLHttpRequest();
+		Httpreq.open("GET", yourUrl, false);
+		Httpreq.send(null);
+		var img = document.getElementById("plot")
+		Httpreq.onloadend = function() {
+			img.src = img.src+"&time=" + new Date().getTime();
+		};
+		return Httpreq.responseText;
+	}
+
+	function update() {
+		var elements = document.getElementsByTagName("input")
+		var end = '?'
+		for (var i = 0, element; element = elements[i++];) {
+			end += element.name + '=' + element.value + "&"
+		}
+		var img = document.getElementById("plot")
+		img.src = "/plot.png" + end + "time=" + new Date().getTime();
+	}
+</script>
 
 </html>

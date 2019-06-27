@@ -9,7 +9,6 @@ class BlackFlyClient(object):
         self.serverIP = serverIP
         self.cameraSerial = cameraSerial
         self.connectCameraServer()
-        self.addCamera()
 
     def connectCameraServer(self):
         context = zmq.Context()
@@ -68,7 +67,11 @@ class BlackFlyClient(object):
             'action': 'GET_IMAGE',
             'serial': self.cameraSerial
         }
+        print "here"
+
         self.socket.send(json.dumps(cmd))
+        print "here"
+
         resp = json.loads(self.socket.recv())
         print "status: " + str(resp["status"])
         print "server message: " + resp["message"]

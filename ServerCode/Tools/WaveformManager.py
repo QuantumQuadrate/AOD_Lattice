@@ -15,10 +15,12 @@ class WaveformManager(object):
     def __init__(self, waveformFile):
         self.waveformFile = waveformFile
         self.jsonData = self.getJsonData()
+        self.initializeWaveforms()
         self.modTime = os.stat(self.waveformFile).st_mtime
 
     def changeFile(self, file):
         self.waveformFile = file
+        self.initializeWaveforms()
         self.jsonData = self.getJsonData()
         self.modTime = os.stat(self.waveformFile).st_mtime
 
@@ -27,21 +29,20 @@ class WaveformManager(object):
         zeroPower = -20
         amplifier = 34
         sumOfWaveforms = 10*math.log10(sum(self.getAmplitudes(channel)))
-        return zeroPower+amplifier+sumOfWaveforms+self.jsonData[str(channel)]['gain']
+        return zeroPower+amplifier+sumOfWaveforms+self.jsonData['channels'][str(channel)]['gain']
 
     def initializeWaveforms(self):
-        self.allWaves = []
+        self.allWaves = [[], []]
         for channel in self.jsonData['channels']:
-            dataSize = int(np.floor(self.jsonData[channel]["rate"] / self.jsonData[channel]['waveFreq']))
-            self.allWaves.append([])
-            for currentWave in self.jsonData[channel]['waves']:
-                wave = np.array(list(map(lambda n: waveforms['sine'](n, currentWave['freq'], self.jsonData["Rate"]), np.arange(dataSize, dtype=np.complex64))), dtype=np.complex64)
-                (self.allWaves[channel]).append(wave)
+            dataSize = int(np.floor(self.jsonData['channels'][channel]["rate"] / self.jsonData['channels'][channel]['waveFreq']))
+            for currentWave in self.jsonData['channels'][channel]['waves']:
+                wave = np.array(list(map(lambda n: waveforms['sine'](n, currentWave['freq'], self.jsonData['channels'][channel]["rate"]), np.arange(dataSize, dtype=np.complex64))), dtype=np.complex64)
+                (self.allWaves[int(channel)]).append(wave)
 
     def getWaveform(self, channel):
         wave = self.allWaves[0][0]*0
         i = 0
-        for currentWave in self.jsonData[str(channel)]['waves']:
+        for currentWave in self.jsonData['channels'][str(channel)]['waves']:
                 wave = np.add(wave, currentWave['amplitude']*self.allWaves[channel][i]*np.exp(currentWave['phase']*np.pi*2j))
                 i += 1
         return wave
@@ -65,8 +66,8 @@ class WaveformManager(object):
         outfile.close()
 
     def randomizePhases(self, channel):
-        lines = len(self.jsonData[str(channel)]['Waves'])
-        ampThreshold = sum(self.getAmplitudes)/(lines-1)
+        lines = len(self.jsonData['channels'][str(channel)]['waves'])
+        ampThreshold = 4*sum(self.getAmplitudes(channel))/lines
         maxAmp = ampThreshold + 1
         while(maxAmp > ampThreshold):
             newPhases = [random.random() for _ in range(lines)]
@@ -81,26 +82,26 @@ class WaveformManager(object):
 
     def getAmplitudes(self, channel):
         amplitudes = []
-        for wave in self.jsonData[str(channel)]['waves']:
+        for wave in self.jsonData['channels'][str(channel)]['waves']:
             amplitudes.append(wave['amplitude'])
         return amplitudes
 
     def getPhases(self, channel):
         phases = []
-        for wave in self.jsonData[str(channel)]['waves']:
+        for wave in self.jsonData['channels'][str(channel)]['waves']:
             phases.append(wave['phase'])
         return phases
 
     def changeAmplitudes(self, channel, amplitudes):
         i = 0
-        for wave in self.jsonData[str(channel)]['waves']:
+        for wave in self.jsonData['channels'][str(channel)]['waves']:
             wave['amplitude'] = amplitudes[i]
             i += 1
         return True
 
     def changePhases(self, channel, phases):
         i = 0
-        for wave in self.jsonData[str(channel)]['waves']:
+        for wave in self.jsonData['channels'][str(channel)]['waves']:
             wave['phase'] = phases[i]
             i += 1
         return True
@@ -112,7 +113,7 @@ class WaveformManager(object):
         print len(freqsList)
         for channel in range(len(freqsList)):
             for freq in freqsList[channel]:
-                data[str(channel)]['Waves'].append({"freq": freq, "amplitude": .2, "phase": 0})
+                data['channels'][str(channel)]['waves'].append({"freq": freq, "amplitude": .2, "phase": 0})
         self.updateJsonData(data)
         self.randomizePhases(0)
         self.randomizePhases(1)
