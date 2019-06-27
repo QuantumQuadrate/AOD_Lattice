@@ -7,7 +7,7 @@ import json
 
 class Server(object):
 
-    def runServer(self, waveMon, waveManager, peakTool):
+    def runServer(self, waveMon, waveManager, peakTool, trapFeedback):
         app = Flask(__name__, static_url_path='/static')
 
 
@@ -87,6 +87,11 @@ class Server(object):
                 return str(int(waveManager.getTotalPower(int(channel))*100)/100.0)
             elif action == 'getWaveformArguments':
                 return jsonify(waveManager.getJsonData())
+            elif action == 'startFeedback':
+                trapFeedback.initializePIDs(int(channel))
+                trapFeedback.startFeedback(int(channel))
+            elif action == 'stopFeedback':
+                trapFeedback.stopFeedback(int(channel))
             else:
                 return 'error'
             return ''
