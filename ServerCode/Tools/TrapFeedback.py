@@ -29,7 +29,9 @@ class TrapFeedback(object):
             self.waveManager.saveJsonData()
 
         def initializePIDs(self, channel):
+            self.PIDs = []
             currentAmplitudes = self.waveManager.getAmplitudes(channel)
+            print len(currentAmplitudes)
             for i in range(len(currentAmplitudes)):
                 self.PIDs += [PID(self.P, self.I, self.D, setpoint=1000, output_limits=(-10, 0))]
                 self.PIDs[i].auto_mode = False
