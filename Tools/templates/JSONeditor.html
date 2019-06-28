@@ -77,11 +77,12 @@
 					</tr>
 				</tbody>
 			</table>
+
 		</div>
 	</div>
-
+<br><br><br><br>
 	<script>
-		document.getElementById("power").innerHTML = "<h3>Channel 0 Power = " + Get('/action/getPower/0') + "dbm, Channel 1 Power = " + Get('/action/getPower/1') + "dbm</h3>";
+		document.getElementById("power").innerHTML = "<h3>Channel 0 Power = " + Get('/action/getPower/0') + "dbm</h3><h3>Channel 1 Power = " + Get('/action/getPower/1') + "dbm</h3>";
 		var container = document.getElementById("jsoneditor");
 		var channelNum = document.getElementById("channel");
 		container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
