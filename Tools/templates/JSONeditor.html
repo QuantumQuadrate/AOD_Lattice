@@ -96,7 +96,7 @@
 			xhr.open('POST', "/action/" + clicked + "/" + channelNum.value);
 			xhr.send(container.value);
 			xhr.onloadend = function() {
-				document.getElementById("power").innerHTML = "<h3>Power = " + Get('/action/getPower/0') + "dbm " + Get('/action/getPower/1') + "dbm</h3>";
+				document.getElementById("power").innerHTML = "<h3>Channel 0 Power = " + Get('/action/getPower/0') + "dbm<br><h3>Channel 1 Power = " + Get('/action/getPower/1') + "dbm</h3>";
 				container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
 			};
 		}
