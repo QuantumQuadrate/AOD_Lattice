@@ -15,7 +15,7 @@ class TrapFeedback(object):
             self.P = .0005
             self.I = .000002
             self.D = .000001
-            self.peakProminence = 200
+            self.setpoint = 1000
             self.waitTime = .1
 
         def updateAmplitudes(self, measuredIntensities, channel):
@@ -33,7 +33,7 @@ class TrapFeedback(object):
             currentAmplitudes = self.waveManager.getAmplitudes(channel)
             print len(currentAmplitudes)
             for i in range(len(currentAmplitudes)):
-                self.PIDs += [PID(self.P, self.I, self.D, setpoint=1000, output_limits=(-10, 0))]
+                self.PIDs += [PID(self.P, self.I, self.D, setpoint=self.setpoint, output_limits=(-20, 0))]
                 self.PIDs[i].auto_mode = False
                 self.PIDs[i].set_auto_mode(True, last_output=10*math.log10(currentAmplitudes[i]))
 
@@ -42,8 +42,6 @@ class TrapFeedback(object):
             url = "http://128.104.162.32/peakData"
             response = urllib.urlopen(url)
             data = ast.literal_eval(response.read())
-            # print data['xAmplitudes']
-            # data = json.loads(data)
             return data[dataNames[channel]]
 
         def iteratePID(self, channel):
