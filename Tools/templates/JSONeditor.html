@@ -24,16 +24,6 @@
 	<div id="container" style='height:500px;'>
 
 		<div id='power' class="table-title"></div>
-		<table class="table-fill">
-			<tbody class="table-hover">
-				<tr>
-					<td class="text-left">Channel 0 Power</td>
-					<td class="text-left"><input type="text" id="channel0" value=10></td>
-					<td class="text-left">Channel 1 Power</td>
-					<td class="text-left"><input type="text" id="channel1" value=10></td>
-				</tr>
-			</tbody>
-		</table>
 		<div id='json' class="content"><textarea id="jsoneditor"></textarea></div>
 
 		<div id="buttons">
@@ -89,12 +79,10 @@
 			</table>
 			<br><br><br><br>
 			<br><br><br><br>
-
 		</div>
 	</div>
 	<script>
-		document.getElementById("channel0").value = Get('/action/getPower/0');
-		document.getElementById("channel1").value = Get('/action/getPower/1');
+		document.getElementById("power").innerHTML = "<h3>Channel 0 Power = " + Get('/action/getPower/0') + "dbm<br><h3>Channel 1 Power = " + Get('/action/getPower/1') + "dbm</h3>";
 		var container = document.getElementById("jsoneditor");
 		var channelNum = document.getElementById("channel");
 		container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
@@ -108,8 +96,7 @@
 			xhr.open('POST', "/action/" + clicked + "/" + channelNum.value);
 			xhr.send(container.value);
 			xhr.onloadend = function() {
-				document.getElementById("channel0").value = Get('/action/getPower/0');
-				document.getElementById("channel1").value = Get('/action/getPower/1');
+				document.getElementById("power").innerHTML = "<h3>Power = " + Get('/action/getPower/0') + "dbm " + Get('/action/getPower/1') + "dbm</h3>";
 				container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
 			};
 		}
