@@ -12,6 +12,21 @@
 	</div>
 	<div id="container" style='height:500px;'>
 		<div id='power' class="content">
+
+			<img id="plot" src="/plot.png?top=284&bottom=604&left=161&right=465&cutSizeX=30&cutSizeY=30&rotation=43">
+		</div>
+		<div id="buttons">
+			<div class="table-title">
+				<h3>Actions</h3>
+			</div>
+			<table class="table-fill">
+				<tbody class="table-hover">
+					<tr>
+						<td class="text-left button" onclick='Get("/streamControl?command=STOP")'>Pause</td>
+						<td class="text-left button" onclick="updatePlot()">Play</td>
+					</tr>
+				</tbody>
+			</table>
 			<table class="table-fill">
 				<tbody class="table-hover">
 					<tr>
@@ -41,24 +56,6 @@
 						<td class="text-left"><input type="text" name="exposureTime" value=1></td>
 						<td class="text-left">peak prominence</td>
 						<td class="text-left"><input type="text" name="prominence" value=200></td>
-					<tr>
-						<td class="text-center button" onclick="feedbackPress('startFeedback')">Start Feedback</td>
-						<td class="text-center button" onclick="feedbackPress('stopFeedback')">Stop Feedback</td>
-						<td class="text-center button" onclick="buttonPress('view')">View Current</td>
-					</tr>
-				</tbody>
-			</table>
-			<img id="plot" src="/plot.png?top=284&bottom=604&left=161&right=465&cutSizeX=30&cutSizeY=30&rotation=43">
-		</div>
-		<div id="buttons">
-			<div class="table-title">
-				<h3>Actions</h3>
-			</div>
-			<table class="table-fill">
-				<tbody class="table-hover">
-					<tr>
-						<td class="text-left button" onclick='Get("/streamControl?command=STOP")'>Pause</td>
-						<td class="text-left button" onclick="updatePlot()">Play</td>
 					</tr>
 				</tbody>
 			</table>
