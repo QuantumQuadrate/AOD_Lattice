@@ -4,6 +4,7 @@ from Tools.peakAnalysisTools import peakAnalysisTools
 
 cameraSerial = 14353509
 camera = BlackflyCamera({'serial': cameraSerial})
+camera.initialize()
 peakTool = peakAnalysisTools(camera)
 Server = CameraServer()
 Server.runServer(peakTool)
