@@ -117,9 +117,9 @@ class CameraServer(object):
         @app.route('/cameraControl/<action>')
         def cameraControl(action):
             if action == "exposureTime":
-                peakTool.camera.configureShutter(request.args.get('exposureTime'))
+                peakTool.camera.configureShutter(float(request.args.get('exposureTime')))
             if action == "prominence":
-                peakTool.prominence = request.args.get('prominence')
+                peakTool.prominence = int(request.args.get('prominence'))
             else:
                 return 'error'
             return ''
