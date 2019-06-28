@@ -54,6 +54,10 @@
 						<td class="text-left">Setpoint</td>
 						<td class="text-left"><input type="text" name="setpoint" value=1000></td>
 					</tr>
+				</tbody>
+			</table>
+			<table class="table-fill">
+				<tbody class="table-hover">
 					<tr>
 						<td class="text-left">P</td>
 						<td class="text-left"><input type="text" name="P" value=.0005></td>
@@ -61,6 +65,11 @@
 						<td class="text-left"><input type="text" name="I" value=.000002></td>
 						<td class="text-left">D</td>
 						<td class="text-left"><input type="text" name="D" value=.000001></td>
+					</tr>
+				</tbody>
+			</table>
+			<table class="table-fill">
+				<tbody class="table-hover">
 					<tr>
 						<td class="text-center button" onclick="feedbackPress('startFeedback')">Start Feedback</td>
 						<td class="text-center button" onclick="feedbackPress('stopFeedback')">Stop Feedback</td>
@@ -72,7 +81,7 @@
 	</div>
 
 	<script>
-		document.getElementById("power").innerHTML = "<h3>Channel 0 Power = " + Get('/action/getPower/0') + "dbm<br><h3>Channel 1 Power = " + Get('/action/getPower/1') + "dbm</h3>";
+		document.getElementById("power").innerHTML = "<h4>Channel 0 Power = " + Get('/action/getPower/0') + "dbm</h4><br><h4>Channel 1 Power = " + Get('/action/getPower/1') + "dbm</h4>";
 		var container = document.getElementById("jsoneditor");
 		var channelNum = document.getElementById("channel");
 		container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
@@ -92,7 +101,7 @@
 		}
 
 		function feedbackPress(clicked) {
-			Get("/feedbackControl/"+channelNum.value+"?"+Pvar.name+"="+Pvar.value+'&'+Ivar.name+"="+Ivar.value+'&'+Dvar.name+"="+Dvar.value+'&'+setpoint.name+"="+setpoint.value);
+			Get("/feedbackControl/" + channelNum.value + "?" + Pvar.name + "=" + Pvar.value + '&' + Ivar.name + "=" + Ivar.value + '&' + Dvar.name + "=" + Dvar.value + '&' + setpoint.name + "=" + setpoint.value);
 			buttonPress(clicked)
 		}
 	</script>
