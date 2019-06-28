@@ -2,7 +2,6 @@ from simple_pid import PID
 import time
 import threading
 import urllib
-import json
 import ast
 import math
 
