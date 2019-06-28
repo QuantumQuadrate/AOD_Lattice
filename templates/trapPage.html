@@ -12,15 +12,42 @@
 	</div>
 	<div id="container" style='height:500px;'>
 		<div id='power' class="content">
-			left <input type="text" name="top" value=284>
-			right <input type="text" name="bottom" value=604><br>
-			top <input type="text" name="left" value=161>
-			bottom <input type="text" name="right" value=465><br>
-			cut size y <input type="text" name="cutSizeX" value=30>
-			cut size x <input type="text" name="cutSizeY" value=30><br>
-			rotation <input type="text" name="rotation" value=43>
-			exposure time <input type="text" name="exposureTime" value=1><br>
-			peak prominence <input type="text" name="prominence" value=200>
+			<table class="table-fill">
+				<tbody class="table-hover">
+					<tr>
+						<td class="text-left">left</td>
+						<td class="text-left"><input type="text" name="top" value=200></td>
+						<td class="text-left">right</td>
+						<td class="text-left"><input type="text" name="bottom" value=604></td>
+					</tr>
+					<tr>
+						<td class="text-left">top</td>
+						<td class="text-left"><input type="text" name="left" value=161></td>
+						<td class="text-left">bottom</td>
+						<td class="text-left"><input type="text" name="right" value=465></td>
+					</tr>
+					<tr>
+						<td class="text-left">cut size y</td>
+						<td class="text-left"><input type="text" name="cutSizeX" value=30></td>
+						<td class="text-left">cut size x</td>
+						<td class="text-left"><input type="text" name="cutSizeY" value=30></td>
+					</tr>
+					<tr>
+						<td class="text-left">Rotation</td>
+						<td class="text-left"><input type="text" name="rotation" value=45></td>
+					</tr>
+					<tr>
+						<td class="text-left">Exposure Time</td>
+						<td class="text-left"><input type="text" name="exposureTime" value=1></td>
+						<td class="text-left">peak prominence</td>
+						<td class="text-left"><input type="text" name="prominence" value=200></td>
+					<tr>
+						<td class="text-center button" onclick="feedbackPress('startFeedback')">Start Feedback</td>
+						<td class="text-center button" onclick="feedbackPress('stopFeedback')">Stop Feedback</td>
+						<td class="text-center button" onclick="buttonPress('view')">View Current</td>
+					</tr>
+				</tbody>
+			</table>
 			<img id="plot" src="/plot.png?top=284&bottom=604&left=161&right=465&cutSizeX=30&cutSizeY=30&rotation=43">
 		</div>
 		<div id="buttons">
@@ -45,7 +72,7 @@
 		Httpreq.send(null);
 		var img = document.getElementById("plot")
 		Httpreq.onloadend = function() {
-			img.src = img.src+"&time=" + new Date().getTime();
+			img.src = img.src + "&time=" + new Date().getTime();
 		};
 		return Httpreq.responseText;
 	}
@@ -61,7 +88,6 @@
 		Get("/cameraControl/exposureTime" + end + "time=" + new Date().getTime());
 		Get("/cameraControl/prominence" + end + "time=" + new Date().getTime());
 	}
-
 </script>
 
 </html>
