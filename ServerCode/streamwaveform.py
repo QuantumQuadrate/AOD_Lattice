@@ -15,20 +15,23 @@ class EventHandler(FileSystemEventHandler):
         self.waveMan = waveMan
 
     def on_any_event(self, event):
-        result = None
-        while result is None:
-            try:
-                if waveMan.compareFreqs(self.waveMan.getJsonData()):
-                    self.waveMan.jsonData = self.waveMan.getJsonData()
-                    result = 1
-                    self.waveMan.initializeWaveforms()
-                else:
-                    result = 1
-                    self.waveMan.jsonData = self.waveMan.getJsonData()
-            except:
-                pass
-        self.waveMan.initializeSDR()
-        self.streamingThread.wave = self.waveMan.getOutputWaveform()
+        if self.waveMonitor.getTotalPower(1) < 30 and self.waveMonitor.getTotalPower(0) < 30:
+            result = None
+            while result is None:
+                try:
+                    if waveMan.compareFreqs(self.waveMan.getJsonData()):
+                        self.waveMan.jsonData = self.waveMan.getJsonData()
+                        result = 1
+                        self.waveMan.initializeWaveforms()
+                    else:
+                        result = 1
+                        self.waveMan.jsonData = self.waveMan.getJsonData()
+                except:
+                    pass
+            self.waveMan.initializeSDR()
+            self.streamingThread.wave = self.waveMan.getOutputWaveform()
+        else:
+            print "WARNING: TOO MUCH POWER"
 
 
 def streamWaveform(streamer, wave, metadata):
