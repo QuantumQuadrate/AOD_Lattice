@@ -1,0 +1,92 @@
+{
+	"channels": {
+		"0": {
+			"args": "",
+			"centerFreq": 44675000,
+			"gain": 4,
+			"rate": 50000000,
+			"waveFreq": 10000,
+			"waves": [
+				{
+					"amplitude": 0.26,
+					"freq": 1900000,
+					"phase": 0.4
+				},
+				{
+					"amplitude": 0.25,
+					"freq": 3400000,
+					"phase": 0.4
+				},
+				{
+					"amplitude": 0.25,
+					"freq": 4900000,
+					"phase": 0.8
+				},
+				{
+					"amplitude": 0.24,
+					"freq": 6400000,
+					"phase": 0.7
+				},
+				{
+					"amplitude": 0.24,
+					"freq": 7900000,
+					"phase": 0.3
+				},
+				{
+					"amplitude": 0.25,
+					"freq": 9400000,
+					"phase": 0.8
+				},
+				{
+					"amplitude": 0.263,
+					"freq": 10900000,
+					"phase": 0.1
+				}
+			]
+		},
+		"1": {
+			"args": "",
+			"centerFreq": 44675000,
+			"gain": 4,
+			"rate": 50000000,
+			"waveFreq": 10000,
+			"waves": [
+				{
+					"amplitude": 0.26,
+					"freq": 1900000,
+					"phase": 0.4
+				},
+				{
+					"amplitude": 0.25,
+					"freq": 3400000,
+					"phase": 0.4
+				},
+				{
+					"amplitude": 0.25,
+					"freq": 4900000,
+					"phase": 0.8
+				},
+				{
+					"amplitude": 0.24,
+					"freq": 6400000,
+					"phase": 0.7
+				},
+				{
+					"amplitude": 0.24,
+					"freq": 7900000,
+					"phase": 0.3
+				},
+				{
+					"amplitude": 0.25,
+					"freq": 9400000,
+					"phase": 0.8
+				},
+				{
+					"amplitude": 0.263,
+					"freq": 10900000,
+					"phase": 0.1
+				}
+			]
+		}
+	}
+}

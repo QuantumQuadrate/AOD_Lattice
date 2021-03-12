@@ -1,0 +1,47 @@
+{
+	"channels": {
+		"0": {
+			"args": "",
+			"centerFreq": 52875000,
+			"gain": 14,
+			"rate": 50000000,
+			"waveFreq": 100000,
+			"waves": [
+				{
+					"amplitude": 0.2,
+					"freq": -1250000,
+					"phase": 0.40216254774984594
+				},
+				{
+					"amplitude": 0.2,
+					"freq": -750000,
+					"phase": 0.9606619480077853
+				},
+				{
+					"amplitude": 0.2,
+					"freq": 750000,
+					"phase": 0.4261804898213114
+				},
+				{
+					"amplitude": 0.2,
+					"freq": 125000,
+					"phase": 0.305903583477923
+				}
+			]
+		},
+		"1": {
+			"args": "",
+			"centerFreq": 52875000,
+			"gain": 13,
+			"rate": 50000000,
+			"waveFreq": 100000,
+			"waves": [
+				{
+					"amplitude": 0.2,
+					"freq": 0,
+					"phase": 0.811779339420248
+				}
+			]
+		}
+	}
+}

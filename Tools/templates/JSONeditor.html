@@ -1,0 +1,101 @@
+<link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+	<link href="static/jsoneditor/dist/jsoneditor.min.css" rel="stylesheet" type="text/css">
+	<script src="static/jsoneditor/dist/jsoneditor.min.js"></script>
+	<script>
+		function Get(yourUrl) {
+			var Httpreq = new XMLHttpRequest(); // a new request
+			Httpreq.open("GET", yourUrl, false);
+			Httpreq.send(null);
+			return Httpreq.responseText;
+		}
+	</script>
+</head>
+
+<body>
+	<div class="table-title">
+		<h3>Waveform Manager</h3>
+	</div>
+	<div id="container" style='height:500px;'>
+
+		<div id='power' class="table-title"></div>
+		<div id='power' class="content"><textarea id="jsoneditor"></textarea></div>
+
+		<div id="buttons">
+			<div class="table-title">
+				<h3>Actions <select id="channel">
+						<option value="0">Channel 0</option>
+						<option value="1">Channel 1</option>
+					</select></h3>
+			</div>
+			<table class="table-fill">
+				<tbody class="table-hover">
+					<tr>
+						<td class="text-center button" onclick="buttonPress('update')">Update</td>
+					</tr>
+				</tbody>
+			</table>
+			<table class="table-fill">
+				<tbody class="table-hover">
+					<tr>
+						<td class="text-center button" onclick="buttonPress('randomizePhases')">Randomize Phase</td>
+						<td class="text-center button" onclick="buttonPress('resetAmplitudes')">Reset All Amplitudes</td>
+					</tr>
+				</tbody>
+			</table>
+			<table class="table-fill">
+				<tbody class="table-hover">
+					<tr>
+						<td class="text-left">Setpoint</td>
+						<td class="text-left"><input type="text" name="setpoint" value=1000></td>
+					</tr>
+					<tr>
+						<td class="text-left">P</td>
+						<td class="text-left"><input type="text" name="P" value=.0005></td>
+						<td class="text-left">I</td>
+						<td class="text-left"><input type="text" name="I" value=.000002></td>
+						<td class="text-left">D</td>
+						<td class="text-left"><input type="text" name="D" value=.000001></td>
+					<tr>
+						<td class="text-center button" onclick="feedbackPress('startFeedback')">Start Feedback</td>
+						<td class="text-center button" onclick="feedbackPress('stopFeedback')">Stop Feedback</td>
+						<td class="text-center button" onclick="buttonPress('view')">View Current</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<script>
+		document.getElementById("power").innerHTML = "<h3>Channel 0 Power = " + Get('/action/getPower/0') + "dbm<br><h3>Channel 1 Power = " + Get('/action/getPower/1') + "dbm</h3>";
+		var container = document.getElementById("jsoneditor");
+		var channelNum = document.getElementById("channel");
+		container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
+		var Pvar = document.getElementsByName("P");
+		var Ivar = document.getElementsByName("I");
+		var Dvar = document.getElementsByName("D");
+		var setpoint = document.getElementsByName("setpoint");
+
+		function buttonPress(clicked) {
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', "/action/" + clicked + "/" + channelNum.value);
+			xhr.send(container.value);
+			xhr.onloadend = function() {
+				document.getElementById("power").innerHTML = "<h3>Power = " + Get('/action/getPower/0') + "dbm " + Get('/action/getPower/1') + "dbm</h3>";
+				container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
+			};
+		}
+
+		function feedbackPress(clicked) {
+			Get("/feedbackControl/"+channelNum.value+"?"+Pvar.name+"="+Pvar.value+'&'+Ivar.name+"="+Ivar.value+'&'+Dvar.name+"="+Dvar.value+'&'+setpoint.name+"="+setpoint.value);
+			buttonPress(clicked)
+		}
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,90 @@
+<link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+</head>
+
+<body>
+	<div class="table-title">
+		<h3>Trap Feedback Page</h3>
+	</div>
+	<div id="container" style='height:500px;'>
+		<div id='power' class="content">
+
+			<img id="plot" src="/plot.png?top=284&bottom=604&left=161&right=465&cutSizeX=30&cutSizeY=30&rotation=43">
+		</div>
+		<div id="buttons">
+			<div class="table-title">
+				<h3>Actions</h3>
+			</div>
+			<table class="table-fill">
+				<tbody class="table-hover">
+					<tr>
+						<td class="text-left button" onclick='Get("/streamControl?command=STOP")'>Pause</td>
+						<td class="text-left button" onclick="updatePlot()">Play</td>
+					</tr>
+				</tbody>
+			</table>
+			<table class="table-fill">
+				<tbody class="table-hover">
+					<tr>
+						<td class="text-left">left</td>
+						<td class="text-left"><input type="text" name="top" value=200></td>
+						<td class="text-left">right</td>
+						<td class="text-left"><input type="text" name="bottom" value=604></td>
+					</tr>
+					<tr>
+						<td class="text-left">top</td>
+						<td class="text-left"><input type="text" name="left" value=161></td>
+						<td class="text-left">bottom</td>
+						<td class="text-left"><input type="text" name="right" value=465></td>
+					</tr>
+					<tr>
+						<td class="text-left">cut size y</td>
+						<td class="text-left"><input type="text" name="cutSizeX" value=30></td>
+						<td class="text-left">cut size x</td>
+						<td class="text-left"><input type="text" name="cutSizeY" value=30></td>
+					</tr>
+					<tr>
+						<td class="text-left">Rotation</td>
+						<td class="text-left"><input type="text" name="rotation" value=45></td>
+					</tr>
+					<tr>
+						<td class="text-left">Exposure Time</td>
+						<td class="text-left"><input type="text" name="exposureTime" value=1></td>
+						<td class="text-left">peak prominence</td>
+						<td class="text-left"><input type="text" name="prominence" value=200></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+<script>
+	function Get(yourUrl) {
+		var Httpreq = new XMLHttpRequest();
+		Httpreq.open("GET", yourUrl, false);
+		Httpreq.send(null);
+		var img = document.getElementById("plot")
+		Httpreq.onloadend = function() {
+			img.src = img.src + "&time=" + new Date().getTime();
+		};
+		return Httpreq.responseText;
+	}
+
+	function updatePlot() {
+		var elements = document.getElementsByTagName("input")
+		var end = '?'
+		for (var i = 0, element; element = elements[i++];) {
+			end += element.name + '=' + element.value + "&"
+		}
+		var img = document.getElementById("plot")
+		img.src = "/plot.png" + end + "time=" + new Date().getTime();
+		Get("/cameraControl/exposureTime" + end + "time=" + new Date().getTime());
+		Get("/cameraControl/prominence" + end + "time=" + new Date().getTime());
+	}
+</script>
+
+</html>
