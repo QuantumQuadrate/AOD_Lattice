@@ -1,9 +1,0 @@
-{
-  "CenterFreq": 52500000,
-  "Gain": 0,
-  "Rate": 50000000,
-  "waveFreq": 150000,
-  "Channels": [0, 1],
-  "args": "",
-  "Waves": [[], []]
-}
