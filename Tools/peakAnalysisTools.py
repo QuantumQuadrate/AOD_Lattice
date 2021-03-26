@@ -1,5 +1,7 @@
 import numpy as np
 from scipy.signal import find_peaks
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy import ndimage
 
@@ -20,7 +22,7 @@ class peakAnalysisTools(object):
 
     def getPlot(self, top, bottom, left, right, rotation, cutSizeX, cutSizeY):
 
-        err, grayimg = self.camera.GetImage()
+        grayimg = self.camera.get_image()
         plt.clf()
         grayimg = ndimage.rotate(grayimg, int(rotation))
         grayimg = grayimg[left:right, top:bottom]
@@ -35,8 +37,8 @@ class peakAnalysisTools(object):
         x1 = int(dim[0]/2)+cutSizeX
         y0 = int(dim[1]/2)
         y1 = int(dim[1]/2)+cutSizeY
-        print "left to right cut: (transpose)" + str(x0) + " " + str(x1)
-        print "top to bottom cut: " + str(y0) + " " + str(y1)
+        print ("left to right cut: (transpose)" + str(x0) + " " + str(x1))
+        print ("top to bottom cut: " + str(y0) + " " + str(y1))
         image.axvline(x0, color='r')
         image.axvline(x1, color='r')
         image.axhline(y0, color='r')
