@@ -16,13 +16,19 @@ class peakAnalysisTools(object):
 
     def measureIntensities(self):
         data = {"xAmplitudes": [], "yAmplitudes": []}
-        data['xAmplitudes'] = list(self.summedFunctionx[self.peaksx])
-        data['yAmplitudes'] = list(self.summedFunctiony[self.peaksy])
+        #data['xAmplitudes'] = list(self.summedFunctionx[self.peaksx].astype(int))
+        #data['yAmplitudes'] = list(self.summedFunctiony[self.peaksy].astype(int))
+        data['xAmplitudes'] = self.summedFunctionx[self.peaksx].tolist()
+        data['yAmplitudes'] = self.summedFunctiony[self.peaksy].tolist()
         return data
 
     def getPlot(self, top, bottom, left, right, rotation, cutSizeX, cutSizeY):
 
         grayimg = self.camera.get_image()
+        # There was an error retrieving image
+        if grayimg is None:
+            return
+
         plt.clf()
         grayimg = ndimage.rotate(grayimg, int(rotation))
         grayimg = grayimg[left:right, top:bottom]

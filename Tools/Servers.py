@@ -66,10 +66,10 @@ class SDRServer(object):
 
         @app.route('/feedbackControl/<channel>')
         def feedbackControl(channel):
-            trapFeedback.setpoint = request.args.get('setpoint')
-            trapFeedback.P = request.args.get('P')
-            trapFeedback.I = request.args.get('I')
-            trapFeedback.D = request.args.get('D')
+            trapFeedback.setpoint = int(request.args.get('setpoint'))
+            trapFeedback.P = float(request.args.get('P'))
+            trapFeedback.I = float(request.args.get('I'))
+            trapFeedback.D = float(request.args.get('D'))
             trapFeedback.initializePIDs(channel)
             return "Done"
 
@@ -100,6 +100,9 @@ class CameraServer(object):
                 while self.running:
                     output = io.BytesIO()
                     figure = peakTool.getPlot(top, bottom, left, right, rotation, cutSizeX, cutSizeY)
+                    #Figure was not returned due to error ... continue through loop
+                    if figure is None:
+                        continue
                     FigureCanvas(figure).print_png(output)
                     yield (b'--frame\r\n' b'Content-Type: image/png\r\n\r\n' + output.getvalue() + b'\r\n')
             self.running = True
@@ -117,7 +120,7 @@ class CameraServer(object):
         @app.route('/cameraControl/<action>')
         def cameraControl(action):
             if action == "exposureTime":
-                peakTool.camera.configureShutter(float(request.args.get('exposureTime')))
+                peakTool.camera.set_exposure(float(request.args.get('exposureTime')) * 1000)
             if action == "prominence":
                 peakTool.prominence = int(request.args.get('prominence'))
             else:

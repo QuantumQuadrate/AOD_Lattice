@@ -20,18 +20,18 @@ class TrapFeedback(object):
 
         def updateAmplitudes(self, measuredIntensities, channel):
             newAmplitudes = []
-            print "updating"
+            print ("updating")
             for i in range(len(self.PIDs)):
                 newPower = self.PIDs[i](measuredIntensities[i])
                 newAmplitudes += [10.0**(newPower/10.0)]
-                print str(newPower) + " " + str(measuredIntensities[i])
+                print (str(newPower) + " " + str(measuredIntensities[i]))
             self.waveManager.changeAmplitudes(channel, newAmplitudes)
             self.waveManager.saveJsonData()
 
         def initializePIDs(self, channel):
             self.PIDs = []
             currentAmplitudes = self.waveManager.getAmplitudes(channel)
-            print len(currentAmplitudes)
+            print (len(currentAmplitudes))
             for i in range(len(currentAmplitudes)):
                 self.PIDs += [PID(self.P, self.I, self.D, setpoint=self.setpoint, output_limits=(-20, 0))]
                 self.PIDs[i].auto_mode = False
@@ -39,7 +39,7 @@ class TrapFeedback(object):
 
         def measureIntensities(self, channel):
             dataNames = ['yAmplitudes', 'xAmplitudes']
-            url = "http://128.104.162.32/peakData"
+            url = "http://128.104.162.32/peakData" #10.0.0.128
             response = urllib.urlopen(url)
             data = ast.literal_eval(response.read())
             return data[dataNames[channel]]

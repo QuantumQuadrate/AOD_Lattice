@@ -76,10 +76,10 @@
 		var container = document.getElementById("jsoneditor");
 		var channelNum = document.getElementById("channel");
 		container.value = JSON.stringify(JSON.parse(Get('/action/getWaveformArguments/0')), null, "\t");
-		var Pvar = document.getElementsByName("P");
-		var Ivar = document.getElementsByName("I");
-		var Dvar = document.getElementsByName("D");
-		var setpoint = document.getElementsByName("setpoint");
+		var Pvar = document.getElementsByName("P")[0];
+		var Ivar = document.getElementsByName("I")[0];
+		var Dvar = document.getElementsByName("D")[0];
+		var setpoint = document.getElementsByName("setpoint")[0];
 
 		function buttonPress(clicked) {
 			var xhr = new XMLHttpRequest();

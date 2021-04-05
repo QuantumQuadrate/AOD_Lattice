@@ -123,6 +123,7 @@ class CameraManager():
                 print('Device serial number retrieved as %s...' % device_serial_number)
 
             # Retrieve, convert, and save images
+            image_data = None
             for i in range(1):
                 try:
 
@@ -198,6 +199,70 @@ class CameraManager():
             return False
 
         return image_data
+
+    def set_exposure(self, amount):
+        """
+         This function configures a custom exposure time. Automatic exposure is turned
+         off in order to allow for the customization, and then the custom setting is
+         applied.
+
+         :param cam: Camera to configure exposure for.
+         :type cam: CameraPtr
+         :return: True if successful, False otherwise.
+         :rtype: bool
+        """
+
+        print('*** CONFIGURING EXPOSURE ***\n')
+
+        try:
+            result = True
+
+            # Turn off automatic exposure mode
+            #
+            # *** NOTES ***
+            # Automatic exposure prevents the manual configuration of exposure
+            # times and needs to be turned off for this example. Enumerations
+            # representing entry nodes have been added to QuickSpin. This allows
+            # for the much easier setting of enumeration nodes to new values.
+            #
+            # The naming convention of QuickSpin enums is the name of the
+            # enumeration node followed by an underscore and the symbolic of
+            # the entry node. Selecting "Off" on the "ExposureAuto" node is
+            # thus named "ExposureAuto_Off".
+
+            if self.cam.ExposureAuto.GetAccessMode() != PySpin.RW:
+                print('Unable to disable automatic exposure. Aborting...')
+                return False
+
+            self.cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
+
+            # Set exposure time manually; exposure time recorded in microseconds
+            #
+            # *** NOTES ***
+            # Notice that the node is checked for availability and writability
+            # prior to the setting of the node. In QuickSpin, availability and
+            # writability are ensured by checking the access mode.
+            #
+            # Further, it is ensured that the desired exposure time does not exceed
+            # the maximum. Exposure time is counted in microseconds - this can be
+            # found out either by retrieving the unit with the GetUnit() method or
+            # by checking SpinView.
+
+            if self.cam.ExposureTime.GetAccessMode() != PySpin.RW:
+                print('Unable to set exposure time. Aborting...')
+                return False
+
+            # Ensure desired exposure time does not exceed the maximum
+            exposure_time_to_set = amount
+            exposure_time_to_set = min(self.cam.ExposureTime.GetMax(), exposure_time_to_set)
+            self.cam.ExposureTime.SetValue(exposure_time_to_set)
+            print('Shutter time set to %s us...\n' % exposure_time_to_set)
+
+        except PySpin.SpinnakerException as ex:
+            print('Error: %s' % ex)
+            result = False
+
+        return result
 
     def __del__(self):
         """
