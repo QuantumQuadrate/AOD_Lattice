@@ -73,7 +73,7 @@ class SDRServer(object):
             trapFeedback.initializePIDs(channel)
             return "Done"
 
-        app.run(host='0.0.0.0', debug=False, use_reloader=False, port=80)
+        app.run(host='0.0.0.0', debug=False, use_reloader=False, port=5050)
 
 
 class CameraServer(object):
@@ -131,4 +131,4 @@ class CameraServer(object):
         def peakData():
             return json.dumps(peakTool.measureIntensities())
 
-        app.run(host='0.0.0.0', debug=False, use_reloader=False, port=80)
+        app.run(host='0.0.0.0', debug=False, use_reloader=False, port=5050)
