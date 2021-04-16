@@ -73,7 +73,7 @@ class WaveformManager(object):
             newPhases = [random.random() for _ in range(lines)]
             self.changePhases(channel, newPhases)
             maxAmp = self.getMaxAmp(channel)
-            print maxAmp
+            print (maxAmp)
         self.updateJsonData(self.jsonData)
 
     def getMaxAmp(self, channel):
@@ -110,7 +110,7 @@ class WaveformManager(object):
         data = {}
         with open(templateFile) as read_file:
             data = json.load(read_file)
-        print len(freqsList)
+        print (len(freqsList))
         for channel in range(len(freqsList)):
             for freq in freqsList[channel]:
                 data['channels'][str(channel)]['waves'].append({"freq": freq, "amplitude": .2, "phase": 0})
@@ -123,7 +123,7 @@ class WaveformManager(object):
     def makeLatticeWaveform(self, lines, spacing, templateFile):
         freqs = np.arange(-(lines-1)/2.0*spacing, ((lines-1)/2.0+1)*spacing, spacing)
         freqsList = [freqs, freqs]
-        print freqsList
+        print (freqsList)
         self.makeWaveform(freqsList, templateFile)
         self.changeAmplitudes(1, self.getAmplitudes(0))
         self.changePhases(1, self.getPhases(0))

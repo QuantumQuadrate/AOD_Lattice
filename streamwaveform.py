@@ -32,7 +32,7 @@ class EventHandler(FileSystemEventHandler):
             self.waveMan.initializeSDR()
             self.streamingThread.wave = self.waveMan.getOutputWaveform()
         else:
-            print "WARNING: TOO MUCH POWER"
+            print ("WARNING: TOO MUCH POWER")
 
 
 def streamWaveform(streamer, wave, metadata):
